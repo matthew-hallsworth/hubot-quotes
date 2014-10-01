@@ -28,10 +28,10 @@ module.exports = (robot) ->
         msg.reply "Quote added"
 
 
-  robot.respond /quote/i, (msg) ->
+  robot.respond /quote$/i, (msg) ->
     quote = new Quote robot
     quote.allAsArray (quotes) ->
-      msg.send msg.random quotes
+      msg.reply msg.random quotes
 
 
   robot.respond /quote (.*)/i, (msg) ->
