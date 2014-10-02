@@ -9,9 +9,15 @@
 Util = require "util"
 
 module.exports = (robot) ->
+
+  admin = process.env.HUBOT_AUTH_ADMIN
+
   robot.respond /show storage$/i, (msg) ->
-    output = Util.inspect(robot.brain.data, false, 4)
-    msg.send output
+    if msg.message.user.name.toLowerCase() in admin.toLowerCase().split(',')
+      output = Util.inspect(robot.brain.data, false, 4)
+      msg.send output
+    else
+      msg.send "You must be an admin for this"
 
   robot.respond /show users$/i, (msg) ->
     response = ""
