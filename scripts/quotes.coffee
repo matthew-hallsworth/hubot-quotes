@@ -2,17 +2,17 @@
 #   Store and retrieve quotes from the robots brain
 #
 # Dependencies:
-#   N/A
+#   auth.coffee and an installed role called 'quote' to delete quotes.
 #
 # Configuration:
-#   N/A
+#   The relevant HUBOT_AUTH_ADMIN entries to allow adding of roles to people for quote management
 #
 # Commands:
 #   hubot addquote <quote> - add a new quote
 #   hubot quote <pattern> - random quote if quote is empty, otherwise matching pattern
 #
 # Author
-#   krakerag (based on work by pezholio)
+#   krakerag (based on work by pezholio @ https://github.com/github/hubot-scripts/blob/master/src/scripts/pinboard.coffee)
 
 module.exports = (robot) ->
   # Time to do some quoting
@@ -29,6 +29,7 @@ module.exports = (robot) ->
 
 
   robot.respond /quote$/i, (msg) ->
+    # Return a random quote from the list
     quote = new Quote robot
     quote.allAsArray (quotes) ->
       msg.reply msg.random quotes
@@ -44,8 +45,20 @@ module.exports = (robot) ->
           msg.reply "#{err}"
         else
           msg.reply message
-    else
+          
 
+  robot.respond /delquote ([0-9]+)/i, (msg) ->
+    # Delete a quote if you have permission
+    if robot.Auth and robot.Auth.hasRole(msg.message.user.name, "quotes")
+      quoteId = msg.match[1]
+      quote = new Quote robot
+      quote.remove quoteId, (err, message) ->
+        if err?
+          msg.reply "#{err}"
+        else
+          msg.reply message
+    else
+      msg.send "You do not have the 'quotes' role to delete quotes"
 
 class Quote
   constructor: (robot) ->
@@ -60,8 +73,10 @@ class Quote
 
   allAsArray: (callback) ->
     entries = []
+    i = 0
     @all().forEach (entry) ->
-      entries.push entry
+      i++
+      entries.push "(" + i + "): " + entry
     callback entries
 
   add: (quote, callback) ->
@@ -75,15 +90,30 @@ class Quote
     else
       @all quote
       callback null, "Quote added"
+      
+  remove: (removeId, callback) ->
+    delKey = removeId - 1
+    for key, value of @quotes_
+      if `delKey == key`
+        @quotes_.splice(key, 1)
+        result = true
+    if result is true
+      callback null, "Quote deleted"
+    else
+      callback "Could not find quote id #{removeId} to delete"
+    
 
   find: (description, callback) ->
     result = []
+    i = 0
     @all().forEach (quote) ->
+      i++
       if quote
         if RegExp(description, "i").test quote
-          result.push quote
+          result.push "(" + i + "): " + quote
     if result.length > 0
-      callback null, result[Math.floor(Math.random() * result.length)]
+      randNum = Math.floor(Math.random() * result.length)
+      callback null, result[randNum]
     else
       callback "No results found"
 

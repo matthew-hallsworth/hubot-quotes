@@ -1,4 +1,21 @@
-# Hubot
+# Hubot install for #tempest
+
+### Installation and testing
+
+You will need node and npm installed in your command prompt. A good place to start is:
+https://gist.github.com/isaacs/579814#file-node-and-npm-in-30-seconds-sh
+
+Once installed, clone this repo locally.
+
+To test locally on the command prompt, edit jenni.sh and change the launch line to remove the -a irc adaptor.
+
+If you have mongo installed for persistence you can modify the auth in the environment variables in this same line.
+
+Once you're ready to test locally, just run: sh jenni.sh
+
+
+
+# Hubot Documentation
 
 This is a version of GitHub's Campfire bot, hubot. He's pretty cool.
 
