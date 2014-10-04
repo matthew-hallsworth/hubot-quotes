@@ -39,13 +39,19 @@ module.exports = (robot) ->
     # Return a matching random quote
     pattern = msg.match[1]
     quote = new Quote robot
-    if pattern
+    if `!isNaN(pattern)`
+      quote.findByNum pattern, (err, message) ->
+        if err?
+          msg.reply "#{err}"
+        else
+          msg.reply message
+    else
       quote.find pattern, (err, message) ->
         if err?
           msg.reply "#{err}"
         else
           msg.reply message
-          
+
 
   robot.respond /delquote ([0-9]+)/i, (msg) ->
     # Delete a quote if you have permission
@@ -90,7 +96,7 @@ class Quote
     else
       @all quote
       callback null, "Quote added"
-      
+
   remove: (removeId, callback) ->
     delKey = removeId - 1
     for key, value of @quotes_
@@ -101,7 +107,7 @@ class Quote
       callback null, "Quote deleted"
     else
       callback "Could not find quote id #{removeId} to delete"
-    
+
 
   find: (description, callback) ->
     result = []
@@ -117,3 +123,15 @@ class Quote
     else
       callback "No results found"
 
+  findByNum: (number, callback) ->
+    result = []
+    i = 0
+    @all().forEach (quote) ->
+      i++
+      if quote
+        if `i == number`
+          result.push "(" + i + "): " + quote
+    if result.length > 0
+      callback null, result[0]
+    else
+      callback "No results found"
