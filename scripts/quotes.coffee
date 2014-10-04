@@ -10,9 +10,12 @@
 # Commands:
 #   hubot addquote <quote> - add a new quote
 #   hubot quote <pattern> - random quote if quote is empty, otherwise matching pattern
+#   hubot delquote <number> - delete a quote if you have 'quote' role
+#   hubot numquotes - return the number of quotes in the system
 #
 # Author
-#   krakerag (based on work by pezholio @ https://github.com/github/hubot-scripts/blob/master/src/scripts/pinboard.coffee)
+#   krakerag (based on work by pezholio's pinboard script)
+#   https://github.com/matthew-hallsworth/hubot-quotes/blob/master/scripts/quotes.coffee
 
 module.exports = (robot) ->
   # Time to do some quoting
@@ -66,6 +69,13 @@ module.exports = (robot) ->
     else
       msg.send "You do not have the 'quotes' role to delete quotes"
 
+  robot.respond /numquotes/i, (msg) ->
+    quote = new Quote robot
+    quote.countQuotes (message) ->
+      msg.reply "#{message}"
+
+
+
 class Quote
   constructor: (robot) ->
     robot.brain.data.quotes ?= []
@@ -76,6 +86,12 @@ class Quote
       @quotes_.push quote
     else
       @quotes_
+
+  countQuotes: (callback) ->
+    i = 0
+    @all().forEach (entry) ->
+      i++
+    callback i
 
   allAsArray: (callback) ->
     entries = []
