@@ -12,7 +12,7 @@
 #   hubot quote <pattern> - random quote if quote is empty, otherwise matching pattern
 #   hubot delquote <number> - delete a quote if you have 'quote' role
 #   hubot numquotes - return the number of quotes in the system
-#	hubot qotd - assign a random quote to the topic if you have 'quote' role
+#   hubot qotd - assign a random quote to the topic if you have 'quote' role
 #
 # Author
 #   krakerag (based on work by pezholio's pinboard script)
@@ -40,7 +40,7 @@ module.exports = (robot) ->
 
   robot.respond /qotd$/i, (msg) ->
     # Set a random quote from the list as topic
-	if robot.Auth and robot.Auth.hasRole(msg.message.user.name, "quotes")
+    if robot.Auth and robot.Auth.hasRole(msg.message.user.name, "quotes")
 	  quote = new Quote robot
       quote.allAsArray (quotes) ->
         msg.topic msg.random quotes
