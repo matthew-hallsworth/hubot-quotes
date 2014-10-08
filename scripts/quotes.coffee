@@ -30,7 +30,7 @@ module.exports = (robot) ->
         msg.reply "That quote exists already."
       else
         msg.reply "Quote added"
-
+    
 
   robot.respond /quote$/i, (msg) ->
     # Return a random quote from the list
@@ -41,9 +41,11 @@ module.exports = (robot) ->
   robot.respond /qotd$/i, (msg) ->
     # Set a random quote from the list as topic
     if robot.Auth and robot.Auth.hasRole(msg.message.user.name, "quotes")
-	  quote = new Quote robot
+      quote = new Quote robot
       quote.allAsArray (quotes) ->
         msg.topic msg.random quotes
+    else
+      msg.send "You do not have the 'quotes' role to delete quotes"
 
   robot.respond /quote (.*)/i, (msg) ->
     # Return a matching random quote
