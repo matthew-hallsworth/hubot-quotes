@@ -12,6 +12,7 @@
 #   hubot quote <pattern> - random quote if quote is empty, otherwise matching pattern
 #   hubot delquote <number> - delete a quote if you have 'quote' role
 #   hubot numquotes - return the number of quotes in the system
+#	hubot qotd - assign a random quote to the topic if you have 'quote' role
 #
 # Author
 #   krakerag (based on work by pezholio's pinboard script)
@@ -37,6 +38,12 @@ module.exports = (robot) ->
     quote.allAsArray (quotes) ->
       msg.reply msg.random quotes
 
+  robot.respond /qotd$/i, (msg) ->
+    # Set a random quote from the list as topic
+	if robot.Auth and robot.Auth.hasRole(msg.message.user.name, "quotes")
+	  quote = new Quote robot
+      quote.allAsArray (quotes) ->
+        msg.topic msg.random quotes
 
   robot.respond /quote (.*)/i, (msg) ->
     # Return a matching random quote
@@ -69,11 +76,11 @@ module.exports = (robot) ->
     else
       msg.send "You do not have the 'quotes' role to delete quotes"
 
+	  
   robot.respond /numquotes/i, (msg) ->
     quote = new Quote robot
     quote.countQuotes (message) ->
       msg.reply "#{message}"
-
 
 
 class Quote
@@ -123,7 +130,6 @@ class Quote
       callback null, "Quote deleted"
     else
       callback "Could not find quote id #{removeId} to delete"
-
 
   find: (description, callback) ->
     result = []
