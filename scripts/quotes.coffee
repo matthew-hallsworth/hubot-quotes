@@ -38,7 +38,9 @@ module.exports = (robot) ->
     ->
       quote = new Quote robot
       quote.allAsArray (quotes) ->
-        robot.topic quoteRoom msg.random quotes
+        shuffledQuotes = shuffle quotes
+        robot.brain.data.topics ?= {}
+        robot.brain.data.topics[quoteRoom] = shuffledQuotes[0]
     null
     true
     timezone
@@ -181,3 +183,14 @@ class Quote
       callback null, result[0]
     else
       callback "No results found"
+
+      
+shuffle = (a) ->
+  # From the end of the list to the beginning, pick element `i`.
+  for i in [a.length-1..1]
+    # Choose random element `j` to the front of `i` to swap with.
+    j = Math.floor Math.random() * (i + 1)
+    # Swap `j` with `i`, using destructured assignment
+    [a[i], a[j]] = [a[j], a[i]]
+  # Return the shuffled array.
+  a
