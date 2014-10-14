@@ -26,7 +26,7 @@
 #   https://github.com/matthew-hallsworth/hubot-quotes/blob/master/scripts/quotes.coffee
 
 timezone = "Australia/Melbourne"
-cronTimestamp = '0 0 9 * * 2-6' # M-F 5pm
+cronTimestamp = '*/2 * * * *' # M-F 5pm
 quoteRoom = "#tempest"
 
 cronJob = require('cron').CronJob
@@ -38,7 +38,7 @@ module.exports = (robot) ->
     ->
       quote = new Quote robot
       quote.allAsArray (quotes) ->
-        msg.topic msg.random quotes
+        robot.topic quoteRoom msg.random quotes
     null
     true
     timezone
