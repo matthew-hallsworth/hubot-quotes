@@ -2,6 +2,8 @@
 #   Store and retrieve quotes from the robots brain
 #
 # Dependencies:
+#   "cron": "0.3.3"
+#   "time": "0.8.2"
 #   auth.coffee and an installed role called 'quote' to delete quotes.
 #
 # Configuration:
@@ -14,12 +16,32 @@
 #   hubot numquotes - return the number of quotes in the system
 #   hubot qotd - assign a random quote to the topic if you have 'quote' role
 #
+# Note:
+#   The script also has a way to automatically populate the topic with a random quote.
+#   You can change this by changing the cronTimestamp and quoteRoom parameters
+#   ( or just remove completely the code on lines 26-30 and 35-39 inclusive.
+#
 # Author
 #   krakerag (based on work by pezholio's pinboard script)
 #   https://github.com/matthew-hallsworth/hubot-quotes/blob/master/scripts/quotes.coffee
 
+timezone = "Australia/Melbourne"
+cronTimestamp = '0 0 9 * * 2-6' # M-F 5pm
+quoteRoom = "#tempest"
+
+cronJob = require('cron').CronJob
+
 module.exports = (robot) ->
   # Time to do some quoting
+  
+  quoteOfTheDay = new cronJob cronTimestamp, 
+    ->
+      quote = new Quote robot
+      quote.allAsArray (quotes) ->
+        msg.topic msg.random quotes
+    null
+    true
+    timezone
 
   robot.respond /addquote (.*)/i, (msg) ->
     # Save a new quote
